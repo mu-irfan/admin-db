@@ -40,7 +40,7 @@ export default function ProfileForm() {
   const { data: session } = useSession();
 
   const { data: apiUser, isLoading } = useGetUSerProfile(token);
-  const { mutate: updateCompany, isPending: updating } = useUpdateUserProfile();
+  const { mutate: updateUser, isPending: updating } = useUpdateUserProfile();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -72,7 +72,7 @@ export default function ProfileForm() {
   }, [session, apiUser, form]);
 
   function onSubmit(data: ProfileFormValues) {
-    updateCompany(
+    updateUser(
       { data, token },
       {
         onSuccess: () => {

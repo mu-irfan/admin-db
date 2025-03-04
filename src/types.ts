@@ -64,3 +64,13 @@ interface FarmRequestPayload {
   start_date: string;
   end_date: string;
 }
+
+interface Option {
+  value: string;
+  label: string;
+}
+
+type PakistanData = {
+  provinces: { label: string; value: string }[];
+  [key: string]: { label: string; value: string }[];
+};

@@ -1,20 +1,5 @@
 import React, { useState } from "react";
 import { Button } from "../button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronDown } from "lucide-react";
-import { tradeOptions } from "@/constant/data";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,187 +10,504 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import toast from "react-hot-toast";
-import { useContextConsumer } from "@/context/Context";
-import FilterModal from "./Filters/Filter";
-import { projectFormSchema } from "@/schemas/FormsValidation";
-import { Label } from "../label";
 import { Input } from "../input";
+import { Label } from "../label";
 import LabelInputContainer from "@/components/Forms/LabelInputContainer";
+import { projectFormSchema } from "@/schemas/FormsValidation";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../../ui/select";
+import L from "leaflet";
+import { cn } from "@/lib/utils";
+import { useContextConsumer } from "@/context/Context";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { Textarea } from "../textarea";
+import { useCreateProject } from "@/hooks/apis/useProject";
+import { pakistanData } from "@/constant/data";
 
-const AddProjectForm = ({ onSearchSubmit, onOpenChange }: any) => {
+const markerIcon = new L.Icon({
+  iconUrl: "/images/map/marker-green.png",
+  iconSize: [18, 32],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
+const LocationPicker = ({ setLat, setLng }: any) => {
+  useMapEvents({
+    click(e) {
+      setLat(e.latlng.lat);
+      setLng(e.latlng.lng);
+    },
+  });
+  return null;
+};
+
+const AddProjectForm = ({ onOpenChange, onClose }: any) => {
   const { token } = useContextConsumer();
-  const [openTradeDropdown, setOpenTradeDropdown] = useState(false);
-  const [selectedTrade, setSelectedTrade] = useState("");
-  const { setFilterModalOpen, isFilterModalOpen, handleFilterLands } =
-    useContextConsumer();
+  const [districtOptions, setDistrictOptions] = useState<Option[]>([]);
+  const [tehsilOptions, setTehsilOptions] = useState<Option[]>([]);
+  const [lat, setLat] = useState(30.3753);
+  const [lng, setLng] = useState(69.3451);
 
-  const form = useForm<z.infer<typeof projectFormSchema>>({
+  const { mutate: createProject, isPending: loading } = useCreateProject();
+
+  const form = useForm({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
       title: "",
       trade: "",
+      sector: "",
+      description: "",
+      requirements: "",
+      location: [0, 0],
+      address: "",
+      province: "",
+      district: "",
+      tehsil: "",
+      duration: "",
       startDate: "",
       endDate: "",
+      deadline: "",
+      totalSlots: "",
     },
   });
 
+  const handleProvinceChange = (value: string) => {
+    const districts = pakistanData[`districts_${value}`] || [];
+    setDistrictOptions(districts as any);
+    setTehsilOptions([]);
+  };
+
+  const handleDistrictChange = (value: string) => {
+    const tehsils = pakistanData[`tehsils_${value}`] || [];
+    setTehsilOptions(tehsils as any);
+  };
+
   const onSubmit = (data: z.infer<typeof projectFormSchema>) => {
-    if (new Date(data.startDate) > new Date(data.endDate)) {
-      toast.error("Start Date cannot be after End Date.");
-      return;
-    }
-    console.log(data);
+    const updatedData = {
+      ...data,
+      location: { lat: lat.toString(), lng: lng.toString() },
+    };
+    createProject(
+      { updatedData, token },
+      {
+        onSuccess: (log) => {
+          if (log?.success) {
+            onClose();
+          }
+        },
+      }
+    );
   };
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-          <LabelInputContainer>
-            <Label htmlFor="title">Project Title</Label>
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      id="title"
-                      placeholder="Enter Project Title"
-                      type="text"
-                      className="outline-none focus:border-primary p-3 rounded-md border border-estateLightGray"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </LabelInputContainer>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+        <LabelInputContainer>
+          <Label htmlFor="title">Project Title</Label>
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="title"
+                    placeholder="Enter Project Title"
+                    type="text"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
 
-          <LabelInputContainer>
-            <Label htmlFor="trade">Trade</Label>
-            <FormField
-              control={form.control}
-              name="trade"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Popover
-                      open={openTradeDropdown}
-                      onOpenChange={setOpenTradeDropdown}
+        <LabelInputContainer>
+          <Label htmlFor="trade">Trade</Label>
+          <FormField
+            control={form.control}
+            name="trade"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="trade"
+                    placeholder="Enter Trade"
+                    type="text"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="sector">Sector</Label>
+          <FormField
+            control={form.control}
+            name="sector"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="sector"
+                    placeholder="Enter Sector"
+                    type="text"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="requirements">Requirements</Label>
+          <FormField
+            control={form.control}
+            name="requirements"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="requirements"
+                    placeholder="Enter Requirements"
+                    type="text"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="location">Select Location</Label>
+          <MapContainer
+            center={[lat, lng]}
+            zoom={6}
+            style={{ height: "150px", width: "100%" }}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <Marker position={[lat, lng]} icon={markerIcon} />
+            <LocationPicker setLat={setLat} setLng={setLng} />
+          </MapContainer>
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="province" className="dark:text-farmacieGrey">
+            Province
+          </Label>
+          <FormField
+            control={form.control}
+            name="province"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Select
+                    onValueChange={(value) => {
+                      handleProvinceChange(value);
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "p-3 py-5 rounded-md border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20",
+                        !field.value
+                          ? "dark:text-farmaciePlaceholderMuted"
+                          : "dark:text-farmacieWhite"
+                      )}
                     >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={openTradeDropdown}
-                          className="min-w-full justify-between p-3 py-5 focus:outline-none focus:ring-1 focus:ring-primary text-gray-500"
-                        >
-                          {selectedTrade
-                            ? tradeOptions.find(
-                                (item) => item.value === selectedTrade
-                              )?.label
-                            : "Search & Select Trade..."}
-                          <ChevronDown
-                            className={`ml-2 h-4 w-4 opacity-50 transition-transform duration-200 ${
-                              openTradeDropdown ? "rotate-180" : ""
-                            }`}
-                          />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="max-w-2xl p-0 rounded-xl">
-                        <Command className="rounded-xl">
-                          <CommandInput placeholder="Search Trade..." />
-                          <CommandList>
-                            <CommandEmpty>No trade found.</CommandEmpty>
-                            <CommandGroup>
-                              {tradeOptions.map((item) => (
-                                <CommandItem
-                                  key={item.value}
-                                  value={item.value}
-                                  onSelect={(currentValue) => {
-                                    setSelectedTrade(currentValue);
-                                    field.onChange(currentValue);
-                                    setOpenTradeDropdown(false);
-                                  }}
-                                >
-                                  <Check
-                                    className={`mr-2 h-4 w-4 ${
-                                      selectedTrade === item.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    }`}
-                                  />
-                                  {item.label}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="startDate">Start Date</Label>
-            <FormField
-              control={form.control}
-              name="startDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      id="startDate"
-                      placeholder="Select Start Date"
-                      type="date"
-                      className="outline-none focus:border-primary text-gray-500 p-3 rounded-md border border-estateLightGray"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="endDate">End Date</Label>
-            <FormField
-              control={form.control}
-              name="endDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      id="endDate"
-                      placeholder="Select End Date"
-                      type="date"
-                      className="outline-none focus:border-primary text-gray-500 p-3 rounded-md border border-estateLightGray"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </LabelInputContainer>
+                      <SelectValue placeholder="Select province" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectGroup>
+                        <SelectLabel>Select Province</SelectLabel>
+                        {pakistanData.provinces.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
 
-          <Button type="submit" className="w-full">
-            Add Project
-          </Button>
-        </form>
-      </Form>
-      <FilterModal
-        open={isFilterModalOpen}
-        onOpenChange={setFilterModalOpen}
-        onApplyFilters={handleFilterLands}
-      />
-    </>
+        <LabelInputContainer>
+          <Label htmlFor="district" className="dark:text-farmacieGrey">
+            District
+          </Label>
+          <FormField
+            control={form.control}
+            name="district"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Select
+                    onValueChange={(value) => {
+                      handleDistrictChange(value);
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "p-3 py-5 rounded-md border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20",
+                        !field.value
+                          ? "dark:text-farmaciePlaceholderMuted"
+                          : "dark:text-farmacieWhite"
+                      )}
+                    >
+                      <SelectValue placeholder="Select District" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectGroup>
+                        <SelectLabel>Select District</SelectLabel>
+                        {districtOptions.map((district) => (
+                          <SelectItem
+                            key={district.value}
+                            value={district.value}
+                          >
+                            {district.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="tehsil" className="dark:text-farmacieGrey">
+            Tehsil
+          </Label>
+          <FormField
+            control={form.control}
+            name="tehsil"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "p-3 py-5 rounded-md border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20",
+                        !field.value
+                          ? "dark:text-farmaciePlaceholderMuted"
+                          : "dark:text-farmacieWhite"
+                      )}
+                    >
+                      <SelectValue placeholder="Select Tehsil" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectGroup>
+                        <SelectLabel>Select Tehsil</SelectLabel>
+                        {tehsilOptions.map((tehsil) => (
+                          <SelectItem key={tehsil.value} value={tehsil.value}>
+                            {tehsil.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="duration">Duration</Label>
+          <FormField
+            control={form.control}
+            name="duration"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="duration"
+                    placeholder="Enter Duration"
+                    type="text"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="startDate">Start Date</Label>
+          <FormField
+            control={form.control}
+            name="startDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="startDate"
+                    placeholder="Select Start Date"
+                    type="date"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="endDate">End Date</Label>
+          <FormField
+            control={form.control}
+            name="endDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="endDate"
+                    placeholder="Select End Date"
+                    type="date"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="deadline">Application Deadline</Label>
+          <FormField
+            control={form.control}
+            name="deadline"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="deadline"
+                    placeholder="Select Deadline"
+                    type="date"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="totalSlots">Total Slots</Label>
+          <FormField
+            control={form.control}
+            name="totalSlots"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="totalSlots"
+                    placeholder="Enter Number of Slots"
+                    type="number"
+                    {...field}
+                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="address" className="dark:text-farmacieGrey">
+            address
+          </Label>
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter your address ..."
+                    rows={4}
+                    id="address"
+                    className="outline-none focus:border-primary"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="description" className="dark:text-farmacieGrey">
+            description
+          </Label>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter your description ..."
+                    rows={4}
+                    id="description"
+                    className="outline-none focus:border-primary"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <Button type="submit" className="w-full" disabled={loading}>
+          Add Project
+        </Button>
+      </form>
+    </Form>
   );
 };
 
