@@ -93,6 +93,11 @@ export const tradeOptions = [
   { value: "steel_fixer", label: "Steel Fixer" },
 ];
 
+export const role = [
+  { value: "m&e", label: "M&E" },
+  { value: "apprenticeship", label: "Apprenticeship" },
+];
+
 export const districts = [
   { value: "north waziristan", label: "North Waziristan" },
   { value: "rawalpindi", label: "Rawalpindi" },

@@ -28,12 +28,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createAccountFormSchema } from "@/schemas/FormsValidation";
@@ -41,55 +35,45 @@ import Link from "next/link";
 import { PhoneInput } from "../ui/PhoneInput";
 import { useUserAccount } from "@/hooks/apis/useUserAuth";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectLabel,
-  SelectGroup,
-  SelectItem,
-} from "../ui/select";
-import { SelectContent } from "@radix-ui/react-select";
-import {
-  districts,
-  educationLevels,
-  experienceOptions,
-  tradeOptions,
-} from "@/constant/data";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { role } from "@/constant/data";
+import { Check, ChevronDown } from "lucide-react";
 
 export function CreateAccountForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [open, setOpen] = useState(false);
-  const [districtListOpen, setDistrictListOpen] = useState<boolean>(false);
-  const [selectedTrade, setSelectedTrade] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [confirmShowPassword, setConfirmShowPassword] =
     useState<boolean>(false);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [openRoleDropdown, setOpenRoleDropdown] = useState(false);
 
   const { mutate: createAccount, isPending: loading } = useUserAccount();
 
   const form = useForm<z.infer<typeof createAccountFormSchema>>({
     resolver: zodResolver(createAccountFormSchema),
     defaultValues: {
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
-      dob: "",
-      cnic: "",
-      experience: "",
-      education: "",
-      preferred_district: "",
-      trade: "",
-      address: "",
+      role: "",
       password: "",
       confirmPassword: "",
     },
   });
 
   const onSubmit = (data: z.infer<typeof createAccountFormSchema>) => {
-    console.log(data, "iamdata");
+    const payload = {
+      ...data,
+      countryCode: data.phone.slice(0, 3),
+      phone: data.phone.slice(3),
+    };
+    createAccount(payload);
   };
 
   return (
@@ -105,7 +89,51 @@ export function CreateAccountForm({
           <Form {...form}>
             <form className="py-2" onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid gap-3.5">
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                  <LabelInputContainer>
+                    <Label htmlFor="firstName">First Name</Label>
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter your first name"
+                              type="text"
+                              id="firstName"
+                              className="outline-none focus:border-primary"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </LabelInputContainer>
+                  <LabelInputContainer>
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter your last name"
+                              type="text"
+                              id="lastName"
+                              className="outline-none focus:border-primary"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </LabelInputContainer>
+                </div>
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                   <LabelInputContainer>
                     <Label htmlFor="email">Email</Label>
                     <FormField
@@ -127,30 +155,9 @@ export function CreateAccountForm({
                       )}
                     />
                   </LabelInputContainer>
-                  <LabelInputContainer>
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <FormField
-                      control={form.control}
-                      name="fullName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter your name"
-                              type="text"
-                              id="fullName"
-                              className="outline-none focus:border-primary"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </LabelInputContainer>
                 </div>
                 <div className="grid gap-3.5">
-                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                     <LabelInputContainer>
                       <Label htmlFor="phone">Phone Number</Label>
                       <FormField
@@ -172,196 +179,57 @@ export function CreateAccountForm({
                         )}
                       />
                     </LabelInputContainer>
-                    <LabelInputContainer>
-                      <Label htmlFor="dob">Date of Birth</Label>
-                      <FormField
-                        control={form.control}
-                        name="dob"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                placeholder="Select DOB"
-                                type="date"
-                                id="DOB"
-                                className="outline-none focus:border-primary text-gray-500"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </LabelInputContainer>
                   </div>
-                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-                    <LabelInputContainer>
-                      <Label htmlFor="cnic">CNIC</Label>
-                      <FormField
-                        control={form.control}
-                        name="cnic"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                placeholder="Enter your CNIC"
-                                type="number"
-                                id="cnic"
-                                className="outline-none focus:border-primary"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </LabelInputContainer>
-                    <LabelInputContainer>
-                      <Label htmlFor="experience">Experience (in years)</Label>
-                      <FormField
-                        control={form.control}
-                        name="experience"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                }}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "p-3 py-5 rounded-md focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20 text-gray-500",
-                                    !field.value
-                                      ? "dark:text-farmaciePlaceholderMuted"
-                                      : "dark:text-farmacieWhite"
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select Experience" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl bg-white border relative z-50 w-52">
-                                  <SelectGroup>
-                                    <SelectLabel>Experience Level</SelectLabel>
-                                    {experienceOptions.map((item) => (
-                                      <SelectItem
-                                        key={item.value}
-                                        value={item.value}
-                                      >
-                                        {item.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </LabelInputContainer>
-                  </div>
-                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-                    <LabelInputContainer>
-                      <Label htmlFor="education">Education</Label>
-                      <FormField
-                        control={form.control}
-                        name="education"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                }}
-                              >
-                                <SelectTrigger
-                                  className={cn(
-                                    "p-3 py-5 rounded-md focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20 text-gray-500",
-                                    !field.value
-                                      ? "dark:text-farmaciePlaceholderMuted"
-                                      : "dark:text-farmacieWhite"
-                                  )}
-                                >
-                                  <SelectValue placeholder="Select Education" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl bg-white border relative z-50 lg:w-56">
-                                  <SelectGroup>
-                                    <SelectLabel>Education Level</SelectLabel>
-                                    {educationLevels.map((item) => (
-                                      <SelectItem
-                                        key={item.value}
-                                        value={item.value}
-                                      >
-                                        {item.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </LabelInputContainer>
-                    <LabelInputContainer>
-                      <Label htmlFor="preferred_district">
-                        Preferred District of Training
-                      </Label>
-                      <FormField
-                        control={form.control}
-                        name="preferred_district"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
+                  <LabelInputContainer>
+                    <Label htmlFor="role">Role</Label>
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
                             <Popover
-                              open={districtListOpen}
-                              onOpenChange={setDistrictListOpen}
+                              open={openRoleDropdown}
+                              onOpenChange={setOpenRoleDropdown}
                             >
                               <PopoverTrigger asChild>
                                 <Button
                                   variant="outline"
                                   role="combobox"
-                                  aria-expanded={districtListOpen}
+                                  aria-expanded={openRoleDropdown}
                                   className="min-w-full justify-between p-3 py-5 focus:outline-none focus:ring-1 focus:ring-primary text-gray-500"
                                 >
-                                  {selectedDistrict
-                                    ? districts.find(
-                                        (item) =>
-                                          item.value === selectedDistrict
+                                  {selectedRole
+                                    ? role.find(
+                                        (item) => item.value === selectedRole
                                       )?.label
-                                    : "Search & Select District..."}
+                                    : "Search & Select Role..."}
                                   <ChevronDown
                                     className={`ml-2 h-4 w-4 opacity-50 transition-transform duration-200 ${
-                                      districtListOpen ? "rotate-180" : ""
+                                      openRoleDropdown ? "rotate-180" : ""
                                     }`}
                                   />
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="max-w-2xl p-0 rounded-xl">
                                 <Command className="rounded-xl">
-                                  <CommandInput placeholder="Search District..." />
+                                  <CommandInput placeholder="Search Role..." />
                                   <CommandList>
-                                    <CommandEmpty>
-                                      No district found.
-                                    </CommandEmpty>
+                                    <CommandEmpty>No role found.</CommandEmpty>
                                     <CommandGroup>
-                                      {districts.map((item) => (
+                                      {role.map((item) => (
                                         <CommandItem
                                           key={item.value}
                                           value={item.value}
                                           onSelect={(currentValue) => {
-                                            setSelectedDistrict(
-                                              currentValue === selectedDistrict
-                                                ? ""
-                                                : currentValue
-                                            );
+                                            setSelectedRole(currentValue);
                                             field.onChange(currentValue);
-                                            setDistrictListOpen(false);
+                                            setOpenRoleDropdown(false);
                                           }}
                                         >
                                           <Check
                                             className={`mr-2 h-4 w-4 ${
-                                              selectedDistrict === item.value
+                                              selectedRole === item.value
                                                 ? "opacity-100"
                                                 : "opacity-0"
                                             }`}
@@ -374,102 +242,12 @@ export function CreateAccountForm({
                                 </Command>
                               </PopoverContent>
                             </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </LabelInputContainer>
-                  </div>
-                  <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-                    <LabelInputContainer>
-                      <Label htmlFor="trade">Trade</Label>
-                      <FormField
-                        control={form.control}
-                        name="trade"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <Popover open={open} onOpenChange={setOpen}>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  aria-expanded={open}
-                                  className="min-w-full justify-between p-3 py-5 focus:outline-none focus:ring-1 focus:ring-primary text-gray-500"
-                                >
-                                  {selectedTrade
-                                    ? tradeOptions.find(
-                                        (item) => item.value === selectedTrade
-                                      )?.label
-                                    : "Search & Select Trade..."}
-                                  <ChevronDown
-                                    className={`ml-2 h-4 w-4 opacity-50 transition-transform duration-200 ${
-                                      open ? "rotate-180" : ""
-                                    }`}
-                                  />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="max-w-2xl p-0 rounded-xl">
-                                <Command className="rounded-xl">
-                                  <CommandInput placeholder="Search Trade..." />
-                                  <CommandList>
-                                    <CommandEmpty>No trade found.</CommandEmpty>
-                                    <CommandGroup>
-                                      {tradeOptions.map((item) => (
-                                        <CommandItem
-                                          key={item.value}
-                                          value={item.value}
-                                          onSelect={(currentValue) => {
-                                            setSelectedTrade(
-                                              currentValue === selectedTrade
-                                                ? ""
-                                                : currentValue
-                                            );
-                                            field.onChange(currentValue);
-                                            setOpen(false);
-                                          }}
-                                        >
-                                          <Check
-                                            className={`mr-2 h-4 w-4 ${
-                                              selectedTrade === item.value
-                                                ? "opacity-100"
-                                                : "opacity-0"
-                                            }`}
-                                          />
-                                          {item.label}
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </LabelInputContainer>
-                    <LabelInputContainer>
-                      <Label htmlFor="address">Address</Label>
-                      <FormField
-                        control={form.control}
-                        name="address"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                placeholder="Enter your address"
-                                type="text"
-                                id="address"
-                                className="outline-none focus:border-primary p-3 rounded-md border border-estateLightGray"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </LabelInputContainer>
-                  </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </LabelInputContainer>
                   <div className="grid gap-2">
                     <LabelInputContainer>
                       <Label htmlFor="password">Password</Label>

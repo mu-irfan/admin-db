@@ -24,6 +24,13 @@ import { Pencil } from "lucide-react";
 import LabelInputContainer from "../Forms/LabelInputContainer";
 import { Label } from "../ui/label";
 import { PhoneInput } from "../ui/PhoneInput";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
@@ -38,25 +45,29 @@ export default function ProfileForm() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
+      countryCode: "",
       phone: "",
+      dateOfBirth: "",
+      cnic: "",
+      gender: null,
+      address: "",
+      tehsil: "",
+      district: "",
+      province: "",
+      role: "",
+      verified: false,
+      profileImg: "",
     },
   });
 
   useEffect(() => {
     if (session?.user) {
-      form.reset({
-        fullName: session.user.name || "",
-        email: session.user.email || "",
-        phone: "",
-      });
+      form.reset(session.user);
     } else if (apiUser?.success && apiUser.data) {
-      form.reset({
-        fullName: apiUser.data.fullName || "",
-        email: apiUser.data.email || "",
-        phone: apiUser.data.phone || "",
-      });
+      form.reset(apiUser.data);
     }
   }, [session, apiUser, form]);
 
@@ -85,79 +96,77 @@ export default function ProfileForm() {
         </Button>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-          <LabelInputContainer>
-            <Label htmlFor="fullName" className="dark:text-farmacieGrey">
-              Full Name
-            </Label>
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter full name"
-                      type="text"
-                      id="fullName"
-                      className="outline-none focus:border-primary py-5"
-                      {...field}
-                      disabled={!isEditable}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="email" className="dark:text-farmacieGrey">
-              Email
-            </Label>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter email"
-                      type="text"
-                      id="email"
-                      className="outline-none focus:border-primary py-5 bg-gray-200 cursor-not-allowed"
-                      {...field}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="phone">Phone Number</Label>
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <PhoneInput
-                      id="phone"
-                      placeholder="Enter your phone number"
-                      defaultCountry="PK"
-                      className="focus:border-none"
-                      disabled={!isEditable}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </LabelInputContainer>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"
+        >
+          {Object.keys(form.getValues())
+            .filter(
+              (field) =>
+                ![
+                  "uuid",
+                  "password",
+                  "createdAt",
+                  "updatedAt",
+                  "canChangePassword",
+                  "otp",
+                  "otpCount",
+                  "profileImg",
+                  "verified",
+                ].includes(field)
+            )
+            .map((field) => (
+              <LabelInputContainer key={field}>
+                <Label htmlFor={field}>
+                  {field.replace(/([A-Z])/g, " $1").trim()}
+                </Label>
+                <FormField
+                  control={form.control}
+                  name={field}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        {field.name === "phone" ? (
+                          <PhoneInput
+                            id="phone"
+                            placeholder="Enter phone number"
+                            defaultCountry="PK"
+                            className="focus:border-none"
+                            {...field}
+                            disabled={!isEditable}
+                          />
+                        ) : field.name === "gender" ? (
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger disabled={!isEditable}>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Male">Male</SelectItem>
+                              <SelectItem value="Female">Female</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Input
+                            placeholder={`Enter ${field.name}`}
+                            type="text"
+                            id={field.name}
+                            {...field}
+                            disabled={!isEditable}
+                          />
+                        )}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </LabelInputContainer>
+            ))}
           {isEditable && (
-            <div className="flex justify-end">
+            <div className="col-span-full flex justify-end">
               <Button type="submit">
                 {updating ? "Updating..." : "Update Profile"}
               </Button>

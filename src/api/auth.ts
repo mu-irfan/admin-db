@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const baseURL = "http://192.168.200.177:7011/api";
+export const baseURL = "http://192.168.200.46:4000/api";
 
 export const createAccount = async (data: createAccountPayload) => {
   try {
@@ -50,7 +50,7 @@ export const forgotPasswordResetPassword = async (data: any) => {
 // get  profile
 export const getUserProfile = async (token: string) => {
   try {
-    const res = await axios.get(`${baseURL}/auth/profile`, {
+    const res = await axios.get(`${baseURL}/user/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

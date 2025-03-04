@@ -2,8 +2,11 @@ import * as z from "zod";
 
 const createAccountFormSchema = z
   .object({
-    fullName: z.string().nonempty({
-      message: "Name is required.",
+    firstName: z.string().nonempty({
+      message: "First Name is required.",
+    }),
+    lastName: z.string().nonempty({
+      message: "First Name is required.",
     }),
     email: z
       .string()
@@ -16,21 +19,7 @@ const createAccountFormSchema = z
     phone: z.string().nonempty({
       message: "Phone number is required.",
     }),
-    dob: z.string().nonempty({
-      message: "Date of Birth is required.",
-    }),
-    cnic: z
-      .string()
-      .min(13, "CNIC must be 13 digits")
-      .max(13, "CNIC must be 13 digits")
-      .nonempty({ message: "CNIC is required." }),
-    experience: z.string().nonempty({ message: "Experience is required." }),
-    education: z.string().nonempty({ message: "Education is required." }),
-    preferred_district: z.string().nonempty({
-      message: "Preferred District of Training is required.",
-    }),
-    trade: z.string().nonempty({ message: "Trade selection is required." }),
-    address: z.string().nonempty({ message: "Address is required." }),
+    role: z.string().nonempty({ message: "Select role" }),
     password: z
       .string()
       .nonempty({
@@ -116,22 +105,36 @@ const resetPasswordSchema = z
   });
 
 const profileFormSchema = z.object({
-  fullName: z
+  firstName: z
     .string()
-    .min(2, {
-      message: "Username must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Username must not be longer than 30 characters.",
-    }),
-  email: z
-    .string({
-      required_error: "Please select an email to display.",
-    })
-    .email(),
-  phone: z.string({
-    required_error: "Phone number is required.",
-  }),
+    .min(2, "First name must be at least 2 characters.")
+    .max(30, "First name must not be longer than 30 characters."),
+  lastName: z
+    .string()
+    .min(2, "Last name must be at least 2 characters.")
+    .max(30, "Last name must not be longer than 30 characters."),
+  email: z.string().email("Invalid email format."),
+  countryCode: z.string().optional(),
+  phone: z.string().min(10, "Phone number must be at least 10 digits."),
+  dateOfBirth: z.string().nullable().optional(),
+  cnic: z
+    .string()
+    .min(13, "CNIC must be 13 digits")
+    .max(13, "CNIC must be 13 digits")
+    .nullable()
+    .optional(),
+  gender: z.enum(["Male", "Female", "Other"]).nullable().optional(),
+  address: z
+    .string()
+    .max(255, "Address cannot exceed 255 characters")
+    .nullable()
+    .optional(),
+  tehsil: z.string().nullable().optional(),
+  district: z.string().nullable().optional(),
+  province: z.string().nullable().optional(),
+  role: z.string().min(2, "Role is required."),
+  verified: z.boolean().optional(),
+  profileImg: z.string().url("Invalid profile image URL").nullable().optional(),
 });
 
 const projectFormSchema = z.object({

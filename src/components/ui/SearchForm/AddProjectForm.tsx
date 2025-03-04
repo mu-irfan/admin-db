@@ -152,7 +152,6 @@ const AddProjectForm = ({ onSearchSubmit, onOpenChange }: any) => {
               )}
             />
           </LabelInputContainer>
-
           <LabelInputContainer>
             <Label htmlFor="startDate">Start Date</Label>
             <FormField
@@ -174,7 +173,6 @@ const AddProjectForm = ({ onSearchSubmit, onOpenChange }: any) => {
               )}
             />
           </LabelInputContainer>
-
           <LabelInputContainer>
             <Label htmlFor="endDate">End Date</Label>
             <FormField
