@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Polygon,
-  useMap,
-} from "react-leaflet";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useCallback, useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
@@ -21,8 +15,8 @@ const icon = new L.Icon({
 });
 
 const MarkersAndPolygons = ({
-  lands,
-  selectedLandId,
+  projects,
+  selectedProjectId,
   resetMap,
   onSeeMoreDetails,
 }: any) => {
@@ -30,8 +24,8 @@ const MarkersAndPolygons = ({
   const currentPolygon = useRef<L.Polygon | null>(null);
   const currentPopup = useRef<L.Popup | null>(null);
 
-  const showLandDetailsOnMap = useCallback(
-    (land: any) => {
+  const showProjectDetailsOnMap = useCallback(
+    (project: any) => {
       if (currentPolygon.current) {
         map.removeLayer(currentPolygon.current);
       }
@@ -39,16 +33,19 @@ const MarkersAndPolygons = ({
         currentPopup.current.removeFrom(map);
       }
 
-      const geometry = land.geometry.map((coord: any) => [coord[1], coord[0]]);
+      const geometry = project.geometry.map((coord: any) => [
+        coord[1],
+        coord[0],
+      ]);
       currentPolygon.current = L.polygon(geometry).addTo(map);
-      const latlng: L.LatLngTuple = [land.location[1], land.location[0]];
+      const latlng: L.LatLngTuple = [project.location[1], project.location[0]];
       const marker = L.marker(latlng, { icon }).addTo(map);
 
       const popup = marker
         .bindPopup(
-          `<b>${land.estate.toUpperCase()}</b><br><b>Size (Acre): ${land.size_acre.toFixed(
+          `<b>${project.estate.toUpperCase()}</b><br><b>Size (Acre): ${project.size_acre.toFixed(
             2
-          )}</b><br>${land.district}, ${land.province}`
+          )}</b><br>${project.district}, ${project.province}`
         )
         .openPopup()
         .getPopup();
@@ -64,22 +61,25 @@ const MarkersAndPolygons = ({
   );
 
   useEffect(() => {
-    if (lands && lands.length > 0) {
-      lands.forEach((land: any) => {
-        const latlng: L.LatLngTuple = [land.location[1], land.location[0]];
+    if (projects && projects.length > 0) {
+      projects.forEach((project: any) => {
+        const latlng: L.LatLngTuple = [
+          project.location[1],
+          project.location[0],
+        ];
         const marker = L.marker(latlng, { icon }).addTo(map);
 
         marker.on("click", () => {
-          showLandDetailsOnMap(land);
-          onSeeMoreDetails(land.uid);
+          showProjectDetailsOnMap(project);
+          onSeeMoreDetails(project.uid);
         });
 
-        if (selectedLandId && land.uid === selectedLandId) {
-          showLandDetailsOnMap(land);
+        if (selectedProjectId && project.uid === selectedProjectId) {
+          showProjectDetailsOnMap(project);
         }
       });
     }
-    if (resetMap && !selectedLandId) {
+    if (resetMap && !selectedProjectId) {
       map.setView([30.3753, 69.3451], 6);
       if (currentPolygon.current) {
         map.removeLayer(currentPolygon.current);
@@ -91,18 +91,23 @@ const MarkersAndPolygons = ({
       }
     }
   }, [
-    lands,
+    projects,
     map,
-    selectedLandId,
+    selectedProjectId,
     resetMap,
     onSeeMoreDetails,
-    showLandDetailsOnMap,
+    showProjectDetailsOnMap,
   ]);
 
   return null;
 };
 
-const Map = ({ lands, selectedLandId, onSeeMoreDetails, resetMap }: any) => {
+const Map = ({
+  projects,
+  selectedProjectId,
+  onSeeMoreDetails,
+  resetMap,
+}: any) => {
   const [tileLayerUrl, setTileLayerUrl] = useState(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
@@ -120,10 +125,10 @@ const Map = ({ lands, selectedLandId, onSeeMoreDetails, resetMap }: any) => {
       className="h-full w-full z-10 relative"
     >
       <TileLayer url={tileLayerUrl} />
-      {lands?.length > 0 && (
+      {projects?.length > 0 && (
         <MarkersAndPolygons
-          lands={lands}
-          selectedLandId={selectedLandId}
+          projects={projects}
+          selectedProjectId={selectedProjectId}
           onSeeMoreDetails={onSeeMoreDetails}
           resetMap={resetMap}
         />

@@ -38,7 +38,7 @@ export function LoginForm({
   const [isForgotPasswordModalOpen, setForgotPasswordModalOpen] =
     useState<boolean>(false);
 
-  const { mutate: companyLogin, isPending: loading } = useUserLogin();
+  const { mutate: employeerLogin, isPending: loading } = useUserLogin();
 
   const form = useForm<z.infer<typeof loginAccountFormSchema>>({
     resolver: zodResolver(loginAccountFormSchema),
@@ -49,7 +49,7 @@ export function LoginForm({
   });
 
   const onSubmit = (data: z.infer<typeof loginAccountFormSchema>) => {
-    companyLogin(data);
+    employeerLogin(data);
   };
 
   return (

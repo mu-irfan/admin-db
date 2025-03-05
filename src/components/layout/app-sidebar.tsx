@@ -48,7 +48,7 @@ import { useContextConsumer } from "@/context/Context";
 import { useAuth } from "@/hooks/useAuth";
 
 export const company = {
-  name: "Admin Dashboard",
+  name: "Employeer Dashboard",
   logo: "/images/logo.png",
   plan: "Manage (Students & Projects)",
 };
@@ -60,7 +60,7 @@ export default function AppSidebar() {
   const { token } = useContextConsumer();
   const { data } = useGetUSerProfile(token);
 
-  console.log(data, "userprofile");
+  console.log(data, "profiledata");
 
   return (
     <Sidebar collapsible="icon">
@@ -162,7 +162,7 @@ export default function AppSidebar() {
                       alt={session?.user?.name || ""}
                     />
                     <AvatarFallback className="rounded-lg">
-                      {data?.firstName?.toUpperCase() || "CN"}
+                      {data?.data?.name.toUpperCase() || "CN"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -190,7 +190,7 @@ export default function AppSidebar() {
                         alt={session?.user?.name || ""}
                       />
                       <AvatarFallback className="rounded-lg">
-                        {data?.firstName?.toUpperCase() || "CN"}
+                        {data?.data?.name.toUpperCase() || "CN"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">

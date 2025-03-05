@@ -253,3 +253,8 @@ input[type="number"] {
     stroke-dashoffset: -125px;
   }
 }
+
+.alert-modal {
+  height: auto;
+  font-size: 12px;
+}

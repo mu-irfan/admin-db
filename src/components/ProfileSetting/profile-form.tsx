@@ -65,7 +65,10 @@ export default function ProfileForm() {
 
   useEffect(() => {
     if (session?.user) {
-      form.reset(session.user);
+      form.reset({
+        ...session.user,
+        email: session.user.email ?? undefined,
+      });
     } else if (apiUser?.success && apiUser.data) {
       form.reset(apiUser.data);
     }
@@ -122,7 +125,7 @@ export default function ProfileForm() {
                 </Label>
                 <FormField
                   control={form.control}
-                  name={field}
+                  name={field as keyof ProfileFormValues}
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -133,12 +136,19 @@ export default function ProfileForm() {
                             defaultCountry="PK"
                             className="focus:border-none"
                             {...field}
+                            value={
+                              typeof field.value === "string" ? field.value : ""
+                            }
                             disabled={!isEditable}
                           />
                         ) : field.name === "gender" ? (
                           <Select
                             onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            defaultValue={
+                              typeof field.value === "string"
+                                ? field.value
+                                : undefined
+                            }
                           >
                             <SelectTrigger disabled={!isEditable}>
                               <SelectValue placeholder="Select gender" />
@@ -155,6 +165,12 @@ export default function ProfileForm() {
                             type="text"
                             id={field.name}
                             {...field}
+                            value={
+                              typeof field.value === "string" ||
+                              typeof field.value === "number"
+                                ? field.value
+                                : ""
+                            }
                             disabled={!isEditable}
                           />
                         )}

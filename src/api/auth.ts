@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const baseURL = "http://192.168.200.46:4000/api";
+export const baseURL = "http://192.168.200.46:5000/api";
 
 export const createAccount = async (data: createAccountPayload) => {
   try {
@@ -64,7 +64,7 @@ export const getUserProfile = async (token: string) => {
 // update  profile
 export const updateUserProfile = async (data: any, token: string) => {
   try {
-    const res = await axios.patch(`${baseURL}/auth/profile`, data, {
+    const res = await axios.patch(`${baseURL}/user/profile`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

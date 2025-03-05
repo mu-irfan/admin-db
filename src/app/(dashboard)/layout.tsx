@@ -15,17 +15,17 @@ const Layout: FC<{ children: ReactNode }> = async ({ children }) => {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
   return (
-    <ProtectedRoutes>
-      <ContextProvider>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <AppSidebar />
-          <SidebarInset>
-            <Header />
-            <main>{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-      </ContextProvider>
-    </ProtectedRoutes>
+    // <ProtectedRoutes>
+    <ContextProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar />
+        <SidebarInset>
+          <Header />
+          <main>{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
+    </ContextProvider>
+    // </ProtectedRoutes>
   );
 };
 

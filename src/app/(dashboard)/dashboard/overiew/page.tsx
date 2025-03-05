@@ -1,12 +1,12 @@
 "use client";
 import { useContextConsumer } from "@/context/Context";
 import dynamic from "next/dynamic";
-import Lands from "@/components/ui/Lands/Lands";
 import { Button } from "@/components/ui/button";
-import { Undo2, X, Filter } from "lucide-react";
-import LandDetails from "@/components/ui/Lands/LandDetail/LandDetails";
-import FilterModal from "@/components/ui/SearchForm/Filters/Filter";
+import { Undo2, X } from "lucide-react";
 import { Toaster } from "react-hot-toast";
+import { useGetAllProjects } from "@/hooks/apis/useProject";
+import Projects from "@/components/ui/Projects/Projects";
+import ProjectDetails from "@/components/ui/Projects/ProjectDetail/ProjectDetails";
 
 const Map = dynamic(() => import("@/components/LeafLetMap/Map"), {
   ssr: false,
@@ -14,17 +14,18 @@ const Map = dynamic(() => import("@/components/LeafLetMap/Map"), {
 
 export default function Home() {
   const {
-    showLands,
-    setShowLands,
-    lands,
-    selectedLandId,
+    token,
+    showProjects,
+    setshowProjects,
+    selectedProjectId,
     showDetails,
-    handleLandsDetails,
-    landDetails,
+    handleProjectDetails,
+    projectDetails,
     resetMap,
-    isFilterModalOpen,
-    setFilterModalOpen,
   } = useContextConsumer();
+
+  // projects api
+  const { data: projects, isLoading } = useGetAllProjects(token);
 
   return (
     <>
@@ -32,31 +33,26 @@ export default function Home() {
       <main className="relative h-[calc(100vh-4rem)] w-full">
         <div className="relative h-full w-full">
           <Map
-            lands={showLands ? lands : []}
-            selectedLandId={selectedLandId}
-            onSeeMoreDetails={handleLandsDetails}
+            projects={showProjects ? projects?.data : []}
+            selectedProjectId={selectedProjectId}
+            onSeeMoreDetails={handleProjectDetails}
             resetMap={resetMap}
           />
           <div className="absolute inset-0 bg-estateBlack opacity-40 z-20 pointer-events-none"></div>
-          {showLands && !showDetails && (
+          {!showProjects && !showDetails && (
             <div className="absolute left-3 md:left-auto top-2 md:top-0 md:right-2 h-full md:w-[400px] md:p-4 md:overflow-y-auto z-30 space-y-4 scrollbar-custom">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowLands(false)}
+                onClick={() => setshowProjects(false)}
                 className="text-primary font-semibold mb-2"
               >
                 <Undo2 className="inline" />
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setFilterModalOpen(true)}
-                className="text-primary focus:outline-none lg:text-base ml-2"
-              >
-                <Filter />
-              </Button>
-              <Lands lands={lands} onSeeMoreDetails={handleLandsDetails} />
+              <Projects
+                projects={projects?.data || []}
+                onSeeMoreDetails={handleProjectDetails}
+              />
             </div>
           )}
           {showDetails && (
@@ -64,12 +60,11 @@ export default function Home() {
               <Button variant="outline" size="sm" onClick={resetMap}>
                 <X className="inline" />
               </Button>
-              <LandDetails details={landDetails} />
+              <ProjectDetails project={projectDetails?.data} />
             </div>
           )}
         </div>
       </main>
-      <FilterModal open={isFilterModalOpen} onOpenChange={setFilterModalOpen} />
     </>
   );
 }

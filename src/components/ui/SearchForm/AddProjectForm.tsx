@@ -24,12 +24,12 @@ import {
   SelectValue,
 } from "../../ui/select";
 import L from "leaflet";
+import { pakistanData, role, trade } from "@/constant/data";
 import { cn } from "@/lib/utils";
+import { useCreateProject } from "@/hooks/apis/useProject";
 import { useContextConsumer } from "@/context/Context";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { Textarea } from "../textarea";
-import { useCreateProject } from "@/hooks/apis/useProject";
-import { pakistanData } from "@/constant/data";
 
 const markerIcon = new L.Icon({
   iconUrl: "/images/map/marker-green.png",
@@ -93,14 +93,18 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
   const onSubmit = (data: z.infer<typeof projectFormSchema>) => {
     const updatedData = {
       ...data,
-      location: { lat: lat.toString(), lng: lng.toString() },
+      location: [
+        parseFloat(data.location[0].toString()),
+        parseFloat(data.location[1].toString()),
+      ],
     };
     createProject(
-      { updatedData, token },
+      { data: updatedData, token },
       {
         onSuccess: (log) => {
           if (log?.success) {
             onClose();
+            onOpenChange((prev: any) => !prev);
           }
         },
       }
@@ -133,20 +137,65 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
         </LabelInputContainer>
 
         <LabelInputContainer>
-          <Label htmlFor="trade">Trade</Label>
+          <Label htmlFor="description" className="dark:text-farmacieGrey">
+            Description
+          </Label>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter your description ..."
+                    rows={2}
+                    id="description"
+                    className="outline-none focus:border-primary"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
+        <LabelInputContainer>
+          <Label htmlFor="trade" className="dark:text-farmacieGrey">
+            Trade
+          </Label>
           <FormField
             control={form.control}
             name="trade"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    id="trade"
-                    placeholder="Enter Trade"
-                    type="text"
-                    {...field}
-                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
-                  />
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "p-3 py-5 rounded-md border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20",
+                        !field.value
+                          ? "dark:text-farmaciePlaceholderMuted"
+                          : "dark:text-farmacieWhite"
+                      )}
+                    >
+                      <SelectValue placeholder="Select Trade" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectGroup>
+                        <SelectLabel>Select Trade</SelectLabel>
+                        {trade.map((tehsil) => (
+                          <SelectItem key={tehsil.value} value={tehsil.value}>
+                            {tehsil.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -155,20 +204,41 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
         </LabelInputContainer>
 
         <LabelInputContainer>
-          <Label htmlFor="sector">Sector</Label>
+          <Label htmlFor="sector" className="dark:text-farmacieGrey">
+            Sector
+          </Label>
           <FormField
             control={form.control}
             name="sector"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    id="sector"
-                    placeholder="Enter Sector"
-                    type="text"
-                    {...field}
-                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
-                  />
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "p-3 py-5 rounded-md border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20",
+                        !field.value
+                          ? "dark:text-farmaciePlaceholderMuted"
+                          : "dark:text-farmacieWhite"
+                      )}
+                    >
+                      <SelectValue placeholder="Select Sector" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectGroup>
+                        <SelectLabel>Select Sector</SelectLabel>
+                        {role.map((sector) => (
+                          <SelectItem key={sector.value} value={sector.value}>
+                            {sector.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -176,20 +246,22 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
           />
         </LabelInputContainer>
 
-        <LabelInputContainer>
-          <Label htmlFor="requirements">Requirements</Label>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="requirements" className="dark:text-farmacieGrey">
+            Requirements
+          </Label>
           <FormField
             control={form.control}
             name="requirements"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
+                  <Textarea
+                    placeholder="Enter your Requirements ..."
+                    rows={2}
                     id="requirements"
-                    placeholder="Enter Requirements"
-                    type="text"
+                    className="outline-none focus:border-primary"
                     {...field}
-                    className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
                   />
                 </FormControl>
                 <FormMessage />
@@ -345,6 +417,30 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
           />
         </LabelInputContainer>
 
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="address" className="dark:text-farmacieGrey">
+            address
+          </Label>
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter your address ..."
+                    rows={2}
+                    id="address"
+                    className="outline-none focus:border-primary"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </LabelInputContainer>
+
         <LabelInputContainer>
           <Label htmlFor="duration">Duration</Label>
           <FormField
@@ -447,54 +543,6 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
                     type="number"
                     {...field}
                     className="border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </LabelInputContainer>
-
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="address" className="dark:text-farmacieGrey">
-            address
-          </Label>
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea
-                    placeholder="Enter your address ..."
-                    rows={4}
-                    id="address"
-                    className="outline-none focus:border-primary"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </LabelInputContainer>
-
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="description" className="dark:text-farmacieGrey">
-            description
-          </Label>
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea
-                    placeholder="Enter your description ..."
-                    rows={4}
-                    id="description"
-                    className="outline-none focus:border-primary"
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />

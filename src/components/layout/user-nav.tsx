@@ -25,7 +25,7 @@ export function UserNav() {
 
   // Determine user data: Prioritize Google session if available
   const user = session?.user || apiUser?.data;
-  const userName = user?.name || user?.fullName || "User";
+  const userName = user?.name || user?.name || "User";
   const userEmail = user?.email || "No email provided";
   const userImage = user?.image || "https://github.com/shadcn.png";
 

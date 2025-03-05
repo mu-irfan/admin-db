@@ -1,4 +1,9 @@
-import { createProject, getProjectList } from "@/api/project";
+import {
+  createProject,
+  deleteProject,
+  getProjectList,
+  updateProject,
+} from "@/api/project";
 import {
   useMutation,
   useQuery,
@@ -43,4 +48,41 @@ export const useGetAllProjects = (token: string) => {
     staleTime: 60000,
     refetchOnWindowFocus: false,
   } as UseQueryOptions);
+};
+
+export const useUpdateProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data, token }: { data: any; token: string }) =>
+      updateProject(data, token),
+    onSuccess: (data: any, variables: { data: any; token: string }) => {
+      if (data?.success) {
+        toast.success(data.message);
+        queryClient.invalidateQueries(["allProjects", variables.token] as any);
+      } else {
+        toast.error(data?.message);
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message);
+    },
+  });
+};
+
+export const useDeleteProject = (token: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (uuid: any) => deleteProject(uuid, token),
+    onSuccess: (data: any, variables: { data: any; token: string }) => {
+      if (data?.success) {
+        toast.success(data?.message);
+        queryClient.invalidateQueries(["allProjects", variables.token] as any);
+      } else {
+        toast.error(data?.response?.data?.message);
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message);
+    },
+  });
 };
