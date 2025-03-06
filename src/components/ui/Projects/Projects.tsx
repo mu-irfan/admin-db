@@ -8,7 +8,11 @@ import {
 } from "@/components/ui/card";
 import { MoveRight, Pencil, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDeleteProject } from "@/hooks/apis/useProject";
+import {
+  useApproveProject,
+  useDeleteProject,
+  useRejectProject,
+} from "@/hooks/apis/useProject";
 import { useContextConsumer } from "@/context/Context";
 import { SweetAlert } from "@/components/alerts/SweetAlert";
 import UpdateProjectModal from "@/components/Forms/forms-modal/UpdateModal";
@@ -23,6 +27,10 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
 
+  const { mutate: approveProject, isPending: approving } =
+    useApproveProject(token);
+  const { mutate: rejectProject, isPending: rejecting } =
+    useRejectProject(token);
   const { mutate: deleteProject, isPending: deleting } =
     useDeleteProject(token);
 
@@ -43,6 +51,48 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
       deleteProject(uuid);
     }
   };
+
+  const handleProjectApprove = async (uuid: any) => {
+    const isConfirmed = await SweetAlert(
+      "Approve Project?",
+      "",
+      "warning",
+      "Yes, approve it!",
+      "#15803D"
+    );
+    if (isConfirmed) {
+      approveProject(uuid);
+    }
+  };
+
+  const handleProjectReject = async (uuid: any) => {
+    const isConfirmed = await SweetAlert(
+      "Cancel Project?",
+      "",
+      "warning",
+      "Yes, Cancel it!",
+      "#15803D"
+    );
+    if (isConfirmed) {
+      rejectProject(uuid);
+    }
+  };
+
+  // Function to return status styles
+  const getStatusStyles = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "bg-yellow-500 text-white";
+      case "open":
+        return "bg-green-600 text-white";
+      case "closed":
+        return "bg-red-600 text-white";
+      default:
+        return "bg-gray-500 text-white";
+    }
+  };
+
+  console.log(projects, "projectsprojects");
 
   return (
     <>
@@ -70,32 +120,38 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                 key={project.uuid}
                 className="w-[330px] sm:w-[350px] border border-gray-200 bg-white shadow-lg rounded-lg overflow-hidden"
               >
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 py-2 px-4">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-xl text-white">
-                      Project Detail
-                    </CardTitle>
-                    <div className="flex">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-white hover:text-blue-800"
-                        onClick={() => handleEditClick(project)}
-                      >
-                        <Pencil className=" w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-white hover:text-blue-800"
-                        onClick={() => handleProjectDelete(project.uuid)}
-                        disabled={deleting}
-                      >
-                        <Trash className="w-4 h-4" />
-                      </Button>
-                    </div>
+                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 py-2 px-4 flex flex-row justify-between">
+                  <CardTitle className="text-xl text-white">
+                    Project Detail
+                    <span
+                      className={`px-2 py-1 text-sm font-medium rounded-md block w-fit capitalize ${getStatusStyles(
+                        project.status
+                      )}`}
+                    >
+                      {project.status}
+                    </span>
+                  </CardTitle>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white hover:text-blue-800"
+                      onClick={() => handleEditClick(project)}
+                    >
+                      <Pencil className=" w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white hover:text-blue-800"
+                      onClick={() => handleProjectDelete(project.uuid)}
+                      disabled={deleting}
+                    >
+                      <Trash className="w-4 h-4" />
+                    </Button>
                   </div>
                 </CardHeader>
+
                 <CardContent className="p-4 space-y-2">
                   {Object.entries(projectDetails).map(([key, value]) => (
                     <div key={key} className="flex justify-between">
@@ -106,7 +162,8 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                     </div>
                   ))}
                 </CardContent>
-                <CardFooter className="bg-gray-50 px-4 pb-4 md:pb-5">
+
+                <CardFooter className="bg-gray-50 px-4 pb-4 md:pb-5 flex justify-between">
                   <Button
                     variant="link"
                     onClick={() => onSeeMoreDetails(project.uuid)}
@@ -114,11 +171,34 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                   >
                     View more Details <MoveRight className="inline pl-1" />
                   </Button>
+                  <div className="flex gap-2 justify-end">
+                    {project.status === "pending" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleProjectApprove(project.uuid)}
+                        className="bg-gray-200 font-medium my-1.5 px-2 py-0.5 text-xs"
+                        disabled={approving}
+                      >
+                        {approving ? "Approving..." : "Approve"}
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleProjectReject(project.uuid)}
+                      className="bg-gray-200 font-medium my-1.5 px-2 py-0.5 text-xs"
+                      disabled={rejecting}
+                    >
+                      {rejecting ? "Wait..." : "Cancel"}
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             );
           })}
       </div>
+
       <UpdateProjectModal
         open={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}

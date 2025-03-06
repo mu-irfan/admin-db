@@ -60,8 +60,6 @@ export default function AppSidebar() {
   const { token } = useContextConsumer();
   const { data } = useGetUSerProfile(token);
 
-  console.log(data, "profiledata");
-
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -162,7 +160,7 @@ export default function AppSidebar() {
                       alt={session?.user?.name || ""}
                     />
                     <AvatarFallback className="rounded-lg">
-                      {data?.data?.name.toUpperCase() || "CN"}
+                      {/* {data?.data?.name.toUpperCase() || "CN"} */}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -190,7 +188,7 @@ export default function AppSidebar() {
                         alt={session?.user?.name || ""}
                       />
                       <AvatarFallback className="rounded-lg">
-                        {data?.data?.name.toUpperCase() || "CN"}
+                        {/* {data?.data?.name.toUpperCase() || "CN"} */}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">

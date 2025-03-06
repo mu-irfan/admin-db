@@ -1,7 +1,9 @@
 import {
+  approveProject,
   createProject,
   deleteProject,
   getProjectList,
+  rejectProject,
   updateProject,
 } from "@/api/project";
 import {
@@ -73,6 +75,42 @@ export const useDeleteProject = (token: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (uuid: any) => deleteProject(uuid, token),
+    onSuccess: (data: any, variables: { data: any; token: string }) => {
+      if (data?.success) {
+        toast.success(data?.message);
+        queryClient.invalidateQueries(["allProjects", variables.token] as any);
+      } else {
+        toast.error(data?.response?.data?.message);
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message);
+    },
+  });
+};
+
+export const useApproveProject = (token: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (uuid: any) => approveProject(uuid, token),
+    onSuccess: (data: any, variables: { data: any; token: string }) => {
+      if (data?.success) {
+        toast.success(data?.message);
+        queryClient.invalidateQueries(["allProjects", variables.token] as any);
+      } else {
+        toast.error(data?.response?.data?.message);
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message);
+    },
+  });
+};
+
+export const useRejectProject = (token: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (uuid: any) => rejectProject(uuid, token),
     onSuccess: (data: any, variables: { data: any; token: string }) => {
       if (data?.success) {
         toast.success(data?.message);

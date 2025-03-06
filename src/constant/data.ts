@@ -2151,6 +2151,33 @@ export const navItems = [
     items: [],
   },
   {
+    title: "Applications",
+    url: "/dashboard/applications",
+    icon: "FileUser",
+    isActive: false,
+    shortcut: ["a", "a"],
+    items: [
+      {
+        title: "Pending",
+        url: "/dashboard/applications/pending",
+        icon: "userPen",
+        shortcut: ["p", "p"],
+      },
+      {
+        title: "Approved",
+        url: "/dashboard/applications/approved",
+        icon: "userPen",
+        shortcut: ["ap", "ap"],
+      },
+      {
+        title: "Rejected",
+        url: "/dashboard/applications/rejected",
+        icon: "userPen",
+        shortcut: ["r", "r"],
+      },
+    ],
+  },
+  {
     title: "Account",
     url: "#",
     icon: "billing",

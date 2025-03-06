@@ -28,7 +28,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
   };
 
   return (
-    <Card className="w-full sm:w-[500px] border border-gray-200 bg-white shadow-lg rounded-lg overflow-hidden">
+    <Card className="w-full sm:w-[440px] border border-gray-200 bg-white shadow-lg rounded-lg overflow-hidden">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 py-2 px-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl text-white">Project Details</CardTitle>

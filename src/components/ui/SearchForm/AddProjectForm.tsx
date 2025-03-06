@@ -171,7 +171,7 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
               <FormItem>
                 <FormControl>
                   <Select
-                    onValueChange={(value) => {
+                    onValueChange={(value: any) => {
                       field.onChange(value);
                     }}
                   >
@@ -214,7 +214,7 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
               <FormItem>
                 <FormControl>
                   <Select
-                    onValueChange={(value) => {
+                    onValueChange={(value: any) => {
                       field.onChange(value);
                     }}
                   >
@@ -294,7 +294,7 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
               <FormItem>
                 <FormControl>
                   <Select
-                    onValueChange={(value) => {
+                    onValueChange={(value: any) => {
                       handleProvinceChange(value);
                       field.onChange(value);
                     }}
@@ -338,7 +338,7 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
               <FormItem>
                 <FormControl>
                   <Select
-                    onValueChange={(value) => {
+                    onValueChange={(value: any) => {
                       handleDistrictChange(value);
                       field.onChange(value);
                     }}
@@ -385,7 +385,7 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
               <FormItem>
                 <FormControl>
                   <Select
-                    onValueChange={(value) => {
+                    onValueChange={(value: any) => {
                       field.onChange(value);
                     }}
                   >

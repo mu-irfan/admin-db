@@ -78,3 +78,37 @@ export const deleteProject = async (uuid: string, token: string) => {
     return error;
   }
 };
+
+export const approveProject = async (uuid: string, token: any) => {
+  try {
+    const res = await axios.patch(
+      `${baseURL}/project/approve?uuid=${uuid}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error: any) {
+    return error;
+  }
+};
+
+export const rejectProject = async (uuid: string, token: any) => {
+  try {
+    const res = await axios.patch(
+      `${baseURL}/project/reject?uuid=${uuid}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error: any) {
+    return error;
+  }
+};
