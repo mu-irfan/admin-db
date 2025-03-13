@@ -93,11 +93,9 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
   const onSubmit = (data: z.infer<typeof projectFormSchema>) => {
     const updatedData = {
       ...data,
-      location: [
-        parseFloat(data.location[0].toString()),
-        parseFloat(data.location[1].toString()),
-      ],
+      location: [lat, lng],
     };
+
     createProject(
       { data: updatedData, token },
       {
@@ -419,7 +417,7 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
 
         <LabelInputContainer className="mb-4">
           <Label htmlFor="address" className="dark:text-farmacieGrey">
-            address
+            Address
           </Label>
           <FormField
             control={form.control}
@@ -442,7 +440,7 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
         </LabelInputContainer>
 
         <LabelInputContainer>
-          <Label htmlFor="duration">Duration</Label>
+          <Label htmlFor="duration">Duration (in months)</Label>
           <FormField
             control={form.control}
             name="duration"

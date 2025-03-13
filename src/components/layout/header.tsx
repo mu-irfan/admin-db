@@ -14,7 +14,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const driverRef = useRef<any>(null);
-  const [isSearchOpen, setSearchOpen] = useState(false);
+  const [isSearchOpen, setSearchOpen] = useState<boolean>(false);
 
   useEffect(() => {
     driverRef.current = driver({

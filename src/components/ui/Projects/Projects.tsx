@@ -16,6 +16,7 @@ import {
 import { useContextConsumer } from "@/context/Context";
 import { SweetAlert } from "@/components/alerts/SweetAlert";
 import UpdateProjectModal from "@/components/Forms/forms-modal/UpdateModal";
+import { getStatusStyles } from "@/lib/helper";
 
 interface ProjectsProps {
   projects: any[];
@@ -78,21 +79,24 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
     }
   };
 
-  // Function to return status styles
-  const getStatusStyles = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return "bg-yellow-500 text-white";
-      case "open":
-        return "bg-green-600 text-white";
-      case "closed":
-        return "bg-red-600 text-white";
-      default:
-        return "bg-gray-500 text-white";
+  const getPostedByDetails = (project: any) => {
+    if (project.admin) {
+      return {
+        role: "Admin",
+        name: `${project.admin.firstName} ${project.admin.lastName}`,
+        email: project.admin.email,
+      };
+    } else if (project.employer) {
+      return {
+        role: "Employer",
+        name: project.employer.name,
+        email: project.employer.email,
+        organization: project.employer.organization,
+        phone: project.employer.phone,
+      };
     }
+    return { role: "Unknown" };
   };
-
-  console.log(projects, "projectsprojects");
 
   return (
     <>
@@ -115,6 +119,8 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
               "Total Slots": project.totalSlots,
             };
 
+            const postedByDetails = getPostedByDetails(project);
+
             return (
               <Card
                 key={project.uuid}
@@ -132,14 +138,16 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                     </span>
                   </CardTitle>
                   <div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-white hover:text-blue-800"
-                      onClick={() => handleEditClick(project)}
-                    >
-                      <Pencil className=" w-4 h-4" />
-                    </Button>
+                    {project.status !== "rejected" && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-white hover:text-blue-800"
+                        onClick={() => handleEditClick(project)}
+                      >
+                        <Pencil className=" w-4 h-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -161,6 +169,19 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                       <span className="text-gray-500">{value}</span>
                     </div>
                   ))}
+
+                  {postedByDetails.role === "Employer" && (
+                    <>
+                      <h3 className="font-semibold">Posted By:</h3>
+                      <div className="text-gray-800 text-sm">
+                        <p>Employer: {postedByDetails.name}</p>
+                        <p>Organization: {postedByDetails.organization}</p>
+                        <p>Email: {postedByDetails.email}</p>
+                        <p>Phone: +92{postedByDetails.phone}</p>
+                      </div>
+                    </>
+                  )}
+                  <br />
                 </CardContent>
 
                 <CardFooter className="bg-gray-50 px-4 pb-4 md:pb-5 flex justify-between">
@@ -183,15 +204,17 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                         {approving ? "Approving..." : "Approve"}
                       </Button>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleProjectReject(project.uuid)}
-                      className="bg-gray-200 font-medium my-1.5 px-2 py-0.5 text-xs"
-                      disabled={rejecting}
-                    >
-                      {rejecting ? "Wait..." : "Cancel"}
-                    </Button>
+                    {project.status !== "rejected" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleProjectReject(project.uuid)}
+                        className="bg-gray-200 font-medium my-1.5 px-2 py-0.5 text-xs"
+                        disabled={rejecting}
+                      >
+                        {rejecting ? "Wait..." : "Cancel"}
+                      </Button>
+                    )}
                   </div>
                 </CardFooter>
               </Card>

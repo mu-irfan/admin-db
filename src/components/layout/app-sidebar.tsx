@@ -48,7 +48,7 @@ import { useContextConsumer } from "@/context/Context";
 import { useAuth } from "@/hooks/useAuth";
 
 export const company = {
-  name: "Employeer Dashboard",
+  name: "Admin Dashboard",
   logo: "/images/logo.png",
   plan: "Manage (Students & Projects)",
 };
