@@ -33,7 +33,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
       <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 py-2 px-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl text-white">Project Details</CardTitle>
-          <CardTitle className="text-xl text-white">Project Details</CardTitle>
           <span
             className={`px-2 py-1 text-sm font-medium rounded-md block w-fit capitalize mr-2 ${getStatusStyles(
               project.status

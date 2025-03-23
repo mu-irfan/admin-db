@@ -18,14 +18,11 @@ const ApplicationDetails: React.FC = () => {
   const project = application.project;
   const student = application.student;
 
-  console.log(applicationDetails, "applicationDetailsapplicationDetails");
-
   const applicationInfo = {
     Status: application.status,
     "Applied On": application.createdAt,
   };
 
-  // ✅ Null-safe project details
   const projectDetails = project
     ? {
         Title: project.title,
