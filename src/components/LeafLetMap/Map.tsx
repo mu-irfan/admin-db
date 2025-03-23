@@ -33,29 +33,31 @@ const MarkersAndPolygons = ({
         currentPopup.current.removeFrom(map);
       }
 
-      const geometry = project.geometry.map((coord: any) => [
-        coord[1],
-        coord[0],
-      ]);
-      currentPolygon.current = L.polygon(geometry).addTo(map);
-      const latlng: L.LatLngTuple = [project.location[1], project.location[0]];
+      if (project.geometry && Array.isArray(project.geometry)) {
+        const geometry = project.geometry.map((coord: any) => [
+          coord[1],
+          coord[0],
+        ]);
+        currentPolygon.current = L.polygon(geometry).addTo(map);
+      }
+
+      const latlng: L.LatLngTuple = [
+        project.location[1], // latitude
+        project.location[0], // longitude
+      ];
+
       const marker = L.marker(latlng, { icon }).addTo(map);
 
-      const popup = marker
-        .bindPopup(
-          `<b>${project.estate.toUpperCase()}</b><br><b>Size (Acre): ${project.size_acre.toFixed(
-            2
-          )}</b><br>${project.district}, ${project.province}`
-        )
-        .openPopup()
-        .getPopup();
+      const popupContent = `
+      <b>${project.title?.toUpperCase() || "Untitled Project"}</b><br>
+      <b>Deadline:</b> ${project.deadline || "N/A"}<br>
+      ${project.district || ""}, ${project.province || ""}
+    `;
 
-      if (popup) {
-        currentPopup.current = popup;
-      } else {
-        currentPopup.current = null;
-      }
-      map.setView(latlng, 20);
+      const popup = marker.bindPopup(popupContent).openPopup().getPopup();
+
+      currentPopup.current = popup || null;
+      map.setView(latlng, 15); // or 20 for deep zoom
     },
     [map]
   );
@@ -63,22 +65,34 @@ const MarkersAndPolygons = ({
   useEffect(() => {
     if (projects && projects.length > 0) {
       projects.forEach((project: any) => {
+        // ✅ Validate location
+        if (
+          !project.location ||
+          !Array.isArray(project.location) ||
+          project.location.length !== 2
+        ) {
+          console.warn("Invalid location:", project);
+          return;
+        }
+
         const latlng: L.LatLngTuple = [
-          project.location[1],
-          project.location[0],
+          project.location[1], // lat
+          project.location[0], // lng
         ];
+
         const marker = L.marker(latlng, { icon }).addTo(map);
 
         marker.on("click", () => {
           showProjectDetailsOnMap(project);
-          onSeeMoreDetails(project.uid);
+          onSeeMoreDetails(project.uuid);
         });
 
-        if (selectedProjectId && project.uid === selectedProjectId) {
+        if (selectedProjectId && project.uuid === selectedProjectId) {
           showProjectDetailsOnMap(project);
         }
       });
     }
+
     if (resetMap && !selectedProjectId) {
       map.setView([30.3753, 69.3451], 6);
       if (currentPolygon.current) {

@@ -8,6 +8,7 @@ export const getAllApplications = async (token: string, pending: string) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
         },
       }
     );
@@ -21,7 +22,10 @@ export const getApplicationDetails = async (uuid: string, token: string) => {
   try {
     const response = await axios.get(`${baseURL}/applications/detail`, {
       params: { uuid },
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+      },
     });
 
     if (response.data) {
@@ -44,6 +48,7 @@ export const approveApplication = async (uuid: string, token: any) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
         },
       }
     );

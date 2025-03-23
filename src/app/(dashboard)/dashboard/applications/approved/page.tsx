@@ -47,7 +47,7 @@ export default function ApprovedApplications() {
           </div>
           <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-5">
             {applications.data.map((application: any, index: number) => {
-              const { project, status, createdAt } = application;
+              const { project, student, status, createdAt } = application;
 
               return (
                 <div className="px-8 pt-8" key={application.uuid}>
@@ -108,6 +108,27 @@ export default function ApprovedApplications() {
                               Applied On:
                             </span>
                             <span className="text-gray-500">{createdAt}</span>
+                          </div>
+                          <Separator className="my-3" />
+                          <h3 className="text-md font-semibold text-gray-700">
+                            Student Info:
+                          </h3>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-gray-700">
+                              Name:
+                            </span>
+                            <span className="text-gray-500">
+                              {student?.firstName || "N/A"}{" "}
+                              {student?.lastName || ""}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-gray-700">
+                              Email:
+                            </span>
+                            <span className="text-gray-500">
+                              {student?.email || "N/A"}
+                            </span>
                           </div>
                         </CardContent>
                         <CardFooter className="!pl-0 pr-4 flex justify-between">

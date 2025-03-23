@@ -18,7 +18,10 @@ export const getProjectDetails = async (uuid: string, token: string) => {
   try {
     const response = await axios.get(`${baseURL}/project/get`, {
       params: { uuid },
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+      },
     });
 
     if (response.data) {
@@ -38,6 +41,7 @@ export const getProjectList = async (token: string) => {
     const res = await axios.get(`${baseURL}/project/list`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
       },
     });
     return res.data;

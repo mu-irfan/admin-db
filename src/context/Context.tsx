@@ -2,7 +2,14 @@
 import { getApplicationDetails } from "@/api/applications";
 import { getProjectDetails } from "@/api/project";
 import { useAuth } from "@/hooks/useAuth";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 // Define context type
 interface ContextType {
@@ -16,7 +23,7 @@ interface ContextType {
   projectDetails: Project | null;
   applicationDetails: null;
   setProjectDetails: (details: Project | null) => void;
-  setApplicationDetails: (details: Project | null) => void;
+  setApplicationDetails: (details: any | null) => void;
   selectedProjectId: string | null;
   setselectedProjectId: (id: string | null) => void;
   handleProjectDetails: (uid: string) => void;
@@ -28,6 +35,7 @@ interface ContextType {
 const Context = createContext<ContextType | undefined>(undefined);
 
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
+  const pathname = usePathname();
   const [showProjects, setshowProjects] = useState<boolean>(false);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [showApplicationDetails, setShowApplicationDetails] =
@@ -37,6 +45,11 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProjectId, setselectedProjectId] = useState<string | null>(
     null
   );
+
+  useEffect(() => {
+    setShowApplicationDetails(false);
+    setApplicationDetails(null);
+  }, [pathname]);
 
   const { getAccessToken } = useAuth();
   const token: any = getAccessToken();
