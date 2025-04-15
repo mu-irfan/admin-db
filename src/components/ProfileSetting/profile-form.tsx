@@ -120,7 +120,7 @@ export default function ProfileForm() {
             )
             .map((field) => (
               <LabelInputContainer key={field}>
-                <Label htmlFor={field}>
+                <Label htmlFor={field} className="capitalize">
                   {field.replace(/([A-Z])/g, " $1").trim()}
                 </Label>
                 <FormField
