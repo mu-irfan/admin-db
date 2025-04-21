@@ -24,7 +24,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginAccountFormSchema } from "@/schemas/FormsValidation";
-import Link from "next/link";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useUserLogin } from "@/hooks/apis/useUserAuth";
@@ -167,15 +166,6 @@ export function LoginForm({
                     <Button type="submit" className="w-full">
                       {loading ? "Logging..." : "Login"}
                     </Button>
-                  </div>
-                  <div className="text-center text-sm">
-                    Don&apos;t have an account?{" "}
-                    <Link
-                      href="/create-account"
-                      className="underline underline-offset-4"
-                    >
-                      Create Account
-                    </Link>
                   </div>
                 </div>
                 <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent mt-6 h-[1px] w-full" />

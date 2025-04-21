@@ -4,10 +4,8 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
-  createAccount,
   forgotPassword,
   forgotPasswordOtpVerify,
   forgotPasswordResetPassword,
@@ -16,24 +14,6 @@ import {
   updateUserProfile,
 } from "@/api/auth";
 import { useAuth } from "../useAuth";
-
-export const useUserAccount = () => {
-  const router = useRouter();
-  return useMutation({
-    mutationFn: (data: createAccountPayload) => createAccount(data),
-    onSuccess: (data: any) => {
-      if (data?.success) {
-        toast.success(data?.message);
-        router.push("/");
-      } else {
-        toast.error(data?.response?.data?.message);
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message);
-    },
-  });
-};
 
 export const useUserLogin = () => {
   const { loginAuth } = useAuth();

@@ -1,49 +1,5 @@
 import * as z from "zod";
 
-const createAccountFormSchema = z
-  .object({
-    firstName: z.string().nonempty({
-      message: "First Name is required.",
-    }),
-    lastName: z.string().nonempty({
-      message: "First Name is required.",
-    }),
-    email: z
-      .string()
-      .nonempty({
-        message: "Email is required.",
-      })
-      .email({
-        message: "Invalid email.",
-      }),
-    phone: z.string().nonempty({
-      message: "Phone number is required.",
-    }),
-    role: z.string().nonempty({ message: "Select role" }),
-    password: z
-      .string()
-      .nonempty({
-        message: "Password is required.",
-      })
-      .min(8, "Password must be at least 8 characters long")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[0-9]/, "Password must contain at least one numeric digit")
-      .regex(
-        /[!@#$%^&*(),.?":{}|<>]/,
-        "Password must contain at least one special character"
-      ),
-    confirmPassword: z
-      .string()
-      .nonempty({
-        message: "Confirm Password is required.",
-      })
-      .min(8, "Password must be at least 8 characters long"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
 const loginAccountFormSchema = z.object({
   email: z
     .string()
@@ -188,7 +144,6 @@ const projectFormSchema = z
   });
 
 export {
-  createAccountFormSchema,
   loginAccountFormSchema,
   emailSchema,
   otpSchema,

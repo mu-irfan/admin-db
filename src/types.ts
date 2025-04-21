@@ -9,12 +9,6 @@ interface Project {
   [key: string]: any;
 }
 
-interface createAccountPayload {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
 type ForgotPasswordFormValues =
   | { email: string }
   | { email: string; otp: string }

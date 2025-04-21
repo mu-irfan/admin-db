@@ -4,15 +4,6 @@ import axios from "axios";
 export const baseURL =
   "https://70bd-2402-e000-43f-3208-dcc8-3279-f836-3475.ngrok-free.app/api";
 
-export const createAccount = async (data: createAccountPayload) => {
-  try {
-    const res = await axios.post(`${baseURL}/auth/signup`, data);
-    return res.data;
-  } catch (error) {
-    return error;
-  }
-};
-
 export const login = async (data: any) => {
   try {
     const res = await axios.post(`${baseURL}/auth/login`, data);
