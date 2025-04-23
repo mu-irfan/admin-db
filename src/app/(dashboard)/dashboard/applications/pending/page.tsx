@@ -132,12 +132,6 @@ export default function PendingProjects() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-semibold text-gray-700">Sector:</span>
-                    <span className="text-gray-500">
-                      {project?.sector || "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
                     <span className="font-semibold text-gray-700">
                       Applied On:
                     </span>

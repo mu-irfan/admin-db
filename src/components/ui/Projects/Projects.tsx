@@ -107,7 +107,6 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
             const projectDetails = {
               Title: project.title,
               Trade: project.trade,
-              Sector: project.sector,
               Address: project.address,
               Tehsil: project.tehsil,
               District: project.district,

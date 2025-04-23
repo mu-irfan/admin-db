@@ -43,7 +43,6 @@ const UpdateProjectForm = ({ project, onClose }: any) => {
     defaultValues: {
       title: "",
       trade: "",
-      sector: "",
       description: "",
       requirements: "",
       location: [0, 0],
@@ -66,7 +65,6 @@ const UpdateProjectForm = ({ project, onClose }: any) => {
       reset({
         title: project.title || "",
         trade: project.trade || "",
-        sector: project.sector || "",
         description: project.description || "",
         requirements: project.requirements || "",
         location: project.location || [0, 0],

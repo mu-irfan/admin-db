@@ -49,7 +49,7 @@ const LocationPicker = ({ setLat, setLng }: any) => {
   return null;
 };
 
-const AddProjectForm = ({ onOpenChange, onClose }: any) => {
+const AddProjectForm = ({ onClose }: any) => {
   const { token } = useContextConsumer();
   const [districtOptions, setDistrictOptions] = useState<Option[]>([]);
   const [tehsilOptions, setTehsilOptions] = useState<Option[]>([]);
@@ -63,7 +63,6 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
     defaultValues: {
       title: "",
       trade: "",
-      sector: "",
       description: "",
       requirements: "",
       location: [0, 0],
@@ -102,7 +101,6 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
         onSuccess: (log) => {
           if (log?.success) {
             onClose();
-            onOpenChange((prev: any) => !prev);
           }
         },
       }
@@ -189,49 +187,6 @@ const AddProjectForm = ({ onOpenChange, onClose }: any) => {
                         {trade.map((tehsil) => (
                           <SelectItem key={tehsil.value} value={tehsil.value}>
                             {tehsil.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </LabelInputContainer>
-
-        <LabelInputContainer>
-          <Label htmlFor="sector" className="dark:text-farmacieGrey">
-            Sector
-          </Label>
-          <FormField
-            control={form.control}
-            name="sector"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Select
-                    onValueChange={(value: any) => {
-                      field.onChange(value);
-                    }}
-                  >
-                    <SelectTrigger
-                      className={cn(
-                        "p-3 py-5 rounded-md border border-estateLightGray focus:outline-none focus:ring-1 focus:ring-primary disabled:bg-primary/20",
-                        !field.value
-                          ? "dark:text-farmaciePlaceholderMuted"
-                          : "dark:text-farmacieWhite"
-                      )}
-                    >
-                      <SelectValue placeholder="Select Sector" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      <SelectGroup>
-                        <SelectLabel>Select Sector</SelectLabel>
-                        {role.map((sector) => (
-                          <SelectItem key={sector.value} value={sector.value}>
-                            {sector.label}
                           </SelectItem>
                         ))}
                       </SelectGroup>

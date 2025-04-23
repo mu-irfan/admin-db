@@ -27,7 +27,6 @@ const ApplicationDetails: React.FC = () => {
     ? {
         Title: project.title,
         Trade: project.trade,
-        Sector: project.sector,
         Description: project.description,
         Requirements: project.requirements,
         Address: project.address,

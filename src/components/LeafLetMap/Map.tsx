@@ -42,8 +42,8 @@ const MarkersAndPolygons = ({
       }
 
       const latlng: L.LatLngTuple = [
-        project.location[1], // latitude
-        project.location[0], // longitude
+        project.location[0], // latitude
+        project.location[1], // longitude
       ];
 
       const marker = L.marker(latlng, { icon }).addTo(map);
@@ -76,8 +76,8 @@ const MarkersAndPolygons = ({
         }
 
         const latlng: L.LatLngTuple = [
-          project.location[1], // lat
-          project.location[0], // lng
+          project.location[0], // lat
+          project.location[1], // lng
         ];
 
         const marker = L.marker(latlng, { icon }).addTo(map);

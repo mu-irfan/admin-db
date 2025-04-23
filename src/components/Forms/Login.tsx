@@ -24,8 +24,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginAccountFormSchema } from "@/schemas/FormsValidation";
-import Image from "next/image";
-import { signIn } from "next-auth/react";
 import { useUserLogin } from "@/hooks/apis/useUserAuth";
 import ForgotPasswordModal from "./forms-modal/auth/ForgotPassword";
 
@@ -57,34 +55,14 @@ export function LoginForm({
         <Card className="rounded-xl">
           <CardHeader className="text-center">
             <CardTitle className="text-xl font-medium">Welcome back</CardTitle>
-            <CardDescription>Login with your Google account</CardDescription>
+            <CardDescription>
+              Login with your email and password
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form className="py-3" onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="grid gap-5">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="w-full"
-                    onClick={() =>
-                      signIn("google", { callbackUrl: "/dashboard/overiew" })
-                    }
-                  >
-                    <Image
-                      width={1000}
-                      height={1000}
-                      src="/images/google.svg"
-                      alt="logo"
-                      className="w-6 mr-2.5"
-                    />
-                    Login with Google
-                  </Button>
-                  <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                    <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                      Or continue with
-                    </span>
-                  </div>
                   <div className="grid gap-5">
                     <LabelInputContainer>
                       <Label htmlFor="email">Email</Label>

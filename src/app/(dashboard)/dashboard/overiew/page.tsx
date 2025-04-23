@@ -2,7 +2,7 @@
 import { useContextConsumer } from "@/context/Context";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Undo2, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { useGetAllProjects } from "@/hooks/apis/useProject";
 import Projects from "@/components/ui/Projects/Projects";
@@ -26,15 +26,14 @@ export default function Home() {
 
   // projects api
   const { data: projects, isLoading } = useGetAllProjects(token);
-  console.log(projects, "proooo");
 
   return (
     <>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster />
       <main className="relative h-[calc(100vh-4rem)] w-full">
         <div className="relative h-full w-full">
           <Map
-            projects={showProjects ? projects?.data : []}
+            projects={projects?.data || []}
             selectedProjectId={selectedProjectId}
             onSeeMoreDetails={handleProjectDetails}
             resetMap={resetMap}

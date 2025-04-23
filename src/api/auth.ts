@@ -1,8 +1,7 @@
 import axios from "axios";
 
 // export const baseURL = "http://192.168.200.46:4000/api";
-export const baseURL =
-  "https://70bd-2402-e000-43f-3208-dcc8-3279-f836-3475.ngrok-free.app/api";
+export const baseURL = "http://192.168.200.177:4000/api";
 
 export const login = async (data: any) => {
   try {

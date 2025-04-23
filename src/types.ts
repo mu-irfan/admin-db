@@ -40,7 +40,6 @@ interface ProjectData {
   creatorType: string;
   title: string;
   trade: string;
-  sector: string;
   description: string;
   requirements: string;
   address: string;

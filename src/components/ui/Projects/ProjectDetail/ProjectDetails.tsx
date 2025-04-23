@@ -12,7 +12,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
   const projectDetails = {
     Title: project.title,
     Trade: project.trade,
-    Sector: project.sector,
     Description: project.description,
     Requirements: project.requirements,
     Tehsil: project.tehsil,
@@ -29,7 +28,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
   };
 
   return (
-    <Card className="w-full sm:w-[440px] border border-gray-200 bg-white shadow-lg rounded-lg overflow-hidden">
+    <Card className="w-full sm:w-[440px] border border-gray-200 bg-white shadow-lg rounded-lg overflow-hidden max-h-full overflow-y-auto scrollbar-custom">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 py-2 px-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl text-white">Project Details</CardTitle>

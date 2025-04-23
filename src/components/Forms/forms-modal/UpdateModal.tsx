@@ -12,8 +12,8 @@ const UpdateProjectModal = ({ open, onOpenChange, project }: any) => {
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[80vw] md:max-w-xl lg:max-w-2xl">
-          <DialogHeader className="mt-8 mb-4 md:flex-row items-center justify-between">
+        <DialogContent className="max-w-[80vw] md:max-w-xl lg:max-w-2xl max-h-full overflow-y-auto scrollbar-custom">
+          <DialogHeader className="mt-2 mb-4 md:flex-row items-center justify-between">
             <div>
               <DialogTitle className="text-primary text-xl font-bold">
                 Update Project
