@@ -8,6 +8,9 @@ import {
 } from "@/components/ui/card";
 import { MoveRight, Pencil, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "../input";
+import toast, { Toaster } from "react-hot-toast";
+import emailjs from "@emailjs/browser";
 import {
   useApproveProject,
   useDeleteProject,
@@ -27,6 +30,7 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
   const { token } = useContextConsumer();
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { mutate: approveProject, isPending: approving } =
     useApproveProject(token);
@@ -53,7 +57,7 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
     }
   };
 
-  const handleProjectApprove = async (uuid: any) => {
+  const handleProjectApprove = async (uuid: any, title: string) => {
     const isConfirmed = await SweetAlert(
       "Approve Project?",
       "",
@@ -63,6 +67,18 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
     );
     if (isConfirmed) {
       approveProject(uuid);
+      emailjs
+        .sendForm("service_b4vh26r", "template_qheg5yo", title, {
+          publicKey: "8m7jcJdc7jCrus9GT",
+        })
+        .then(
+          () => {
+            toast.success("Project Status Send");
+          },
+          (error) => {
+            toast.error("Sorry, something went wrong.");
+          }
+        );
     }
   };
 
@@ -98,12 +114,28 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
     return { role: "Unknown" };
   };
 
+  const filteredProjects = projects.filter((project) =>
+    project.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
+      <Toaster />
       <div className="space-y-4">
-        {projects &&
-          projects.length > 0 &&
-          projects.map((project) => {
+        {projects?.length > 0 && (
+          <div className="w-full max-w-md">
+            <Input
+              type="text"
+              placeholder="Search Project by its Title.."
+              className="w-full shadow-xl py-5 border border-primary/80"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        )}
+
+        {filteredProjects.length > 0 &&
+          filteredProjects.map((project) => {
             const projectDetails = {
               Title: project.title,
               Trade: project.trade,
@@ -144,7 +176,7 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                         className="text-white hover:text-blue-800"
                         onClick={() => handleEditClick(project)}
                       >
-                        <Pencil className=" w-4 h-4" />
+                        <Pencil className="w-4 h-4" />
                       </Button>
                     )}
                     <Button
@@ -168,7 +200,6 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                       <span className="text-gray-500">{value}</span>
                     </div>
                   ))}
-
                   {postedByDetails.role === "Employer" && (
                     <>
                       <h3 className="font-semibold">Posted By:</h3>
@@ -196,7 +227,9 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleProjectApprove(project.uuid)}
+                        onClick={() =>
+                          handleProjectApprove(project.uuid, project.title)
+                        }
                         className="bg-gray-200 font-medium my-1.5 px-2 py-0.5 text-xs"
                         disabled={approving}
                       >

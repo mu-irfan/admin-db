@@ -21,8 +21,8 @@ export default function Header() {
       popoverClass: "driverjs-theme",
       showButtons: ["next", "close"],
       animate: true,
-      nextBtnText: "Search",
-      doneBtnText: "Search",
+      nextBtnText: "Add Project",
+      doneBtnText: "Add Project",
       onNextClick: () => {
         router.push("/dashboard/overiew");
         setSearchOpen(true);
