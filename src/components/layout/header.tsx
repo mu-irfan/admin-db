@@ -24,7 +24,7 @@ export default function Header() {
       nextBtnText: "Add Project",
       doneBtnText: "Add Project",
       onNextClick: () => {
-        router.push("/dashboard/overiew");
+        router.push("/dashboard/projects");
         setSearchOpen(true);
         driverRef.current?.destroy();
       },
@@ -55,7 +55,7 @@ export default function Header() {
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumbs />
-          {pathname === "/dashboard/overiew" && (
+          {pathname === "/dashboard/projects" && (
             <Button
               className="text-gray-700 text-sm md:ml-6 border border-gray-400 bg-transparent shadow-md hover:text-white hover:bg-primary/80"
               type="button"

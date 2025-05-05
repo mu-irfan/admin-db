@@ -1,6 +1,6 @@
 "use client";
 import { getApplicationDetails } from "@/api/applications";
-import { getProjectDetails } from "@/api/project";
+import { getProjectDetails, getProjectList } from "@/api/project";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname } from "next/navigation";
 import {
@@ -14,6 +14,8 @@ import {
 // Define context type
 interface ContextType {
   token: string;
+  hasProjectAccess: boolean;
+  setHasProjectAccess: (value: boolean) => void;
   showProjects: boolean;
   setshowProjects: (value: boolean) => void;
   showDetails: boolean;
@@ -37,6 +39,7 @@ const Context = createContext<ContextType | undefined>(undefined);
 export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const [showProjects, setshowProjects] = useState<boolean>(false);
+  const [hasProjectAccess, setHasProjectAccess] = useState(true);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [showApplicationDetails, setShowApplicationDetails] =
     useState<boolean>(false);
@@ -45,14 +48,34 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProjectId, setselectedProjectId] = useState<string | null>(
     null
   );
+  const { getAccessToken } = useAuth();
+  const token: any = getAccessToken();
 
   useEffect(() => {
     setShowApplicationDetails(false);
     setApplicationDetails(null);
   }, [pathname]);
 
-  const { getAccessToken } = useAuth();
-  const token: any = getAccessToken();
+  useEffect(() => {
+    const checkProjectAccess = async () => {
+      try {
+        const res = await getProjectList(token);
+        if (res?.success) {
+          setHasProjectAccess(true);
+        } else {
+          setHasProjectAccess(false);
+        }
+      } catch (error: any) {
+        if (error?.response?.status === 403) {
+          setHasProjectAccess(false);
+        }
+      }
+    };
+
+    if (token) {
+      checkProjectAccess();
+    }
+  }, [token]);
 
   const handleProjectDetails = async (uid: string) => {
     const details: Project = await getProjectDetails(uid, token);
@@ -90,6 +113,8 @@ export const ContextProvider = ({ children }: { children: ReactNode }) => {
     handleProjectDetails,
     handleApplicationDetails,
     resetMap,
+    hasProjectAccess,
+    setHasProjectAccess,
   };
 
   return <Context.Provider value={contextValues}>{children}</Context.Provider>;

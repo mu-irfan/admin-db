@@ -28,7 +28,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   ChevronRight,
@@ -57,14 +56,24 @@ export default function AppSidebar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const { logout } = useAuth();
-  const { token } = useContextConsumer();
+  const { token, hasProjectAccess } = useContextConsumer();
   const { data } = useGetUSerProfile(token);
+
+  const filteredNavItems = navItems.filter((item) => {
+    if (
+      !hasProjectAccess &&
+      (item.title === "Applications" || item.title === "Projects")
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link
-          href="/dashboard/overiew"
+          href="/dashboard"
           className="flex gap-2 py-2 text-sidebar-accent-foreground cursor-pointer"
         >
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary/20 text-sidebar-primary-foreground">
@@ -86,7 +95,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
-            {navItems.map((item: any) => {
+            {filteredNavItems.map((item: any) => {
               const Icon =
                 item.icon && Icons[item.icon as keyof typeof Icons]
                   ? Icons[item.icon as keyof typeof Icons]

@@ -32,7 +32,7 @@ export const useAuth = () => {
     Cookies.set("accessToken", token, { expires: 8 });
     Cookies.set("refreshToken", refreshToken, { expires: 7 });
     setIsAuthenticated(true);
-    router.push("/dashboard/overiew");
+    router.push("/dashboard");
   };
 
   const logout = async () => {

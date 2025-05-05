@@ -22,7 +22,6 @@ export default function ApprovedApplications() {
     token,
     "accepted"
   );
-  console.log(applications, "applicaitonsapplicaitons");
 
   if (isLoading) {
     return (

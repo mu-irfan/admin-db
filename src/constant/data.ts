@@ -2144,10 +2144,18 @@ export const tehsils = [
 export const navItems = [
   {
     title: "Dashboard",
-    url: "/dashboard/overiew",
+    url: "/dashboard",
     icon: "dashboard",
     isActive: false,
     shortcut: ["d", "d"],
+    items: [],
+  },
+  {
+    title: "Projects",
+    url: "/dashboard/projects",
+    icon: "projects",
+    isActive: false,
+    shortcut: ["p", "p"],
     items: [],
   },
   {

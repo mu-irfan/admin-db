@@ -22,7 +22,6 @@ export default function RejectedApplications() {
     token,
     "rejected"
   );
-  console.log(applications, "applicaitonsapplicaitons");
 
   if (isLoading) {
     return (

@@ -9,8 +9,7 @@ import {
 import { MoveRight, Pencil, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "../input";
-import toast, { Toaster } from "react-hot-toast";
-import emailjs from "@emailjs/browser";
+import { Toaster } from "react-hot-toast";
 import {
   useApproveProject,
   useDeleteProject,
@@ -67,18 +66,6 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
     );
     if (isConfirmed) {
       approveProject(uuid);
-      emailjs
-        .sendForm("service_b4vh26r", "template_qheg5yo", title, {
-          publicKey: "8m7jcJdc7jCrus9GT",
-        })
-        .then(
-          () => {
-            toast.success("Project Status Send");
-          },
-          (error) => {
-            toast.error("Sorry, something went wrong.");
-          }
-        );
     }
   };
 
@@ -123,11 +110,11 @@ const Projects: React.FC<ProjectsProps> = ({ projects, onSeeMoreDetails }) => {
       <Toaster />
       <div className="space-y-4">
         {projects?.length > 0 && (
-          <div className="w-full max-w-md">
+          <div className="w-[330px] sm:w-[350px]">
             <Input
               type="text"
               placeholder="Search Project by its Title.."
-              className="w-full shadow-xl py-5 border border-primary/80"
+              className="w-full shadow-xl py-[22px] border border-primary/80"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

@@ -16,7 +16,6 @@ export default function Home() {
   const {
     token,
     showProjects,
-    setshowProjects,
     selectedProjectId,
     showDetails,
     handleProjectDetails,
@@ -25,7 +24,7 @@ export default function Home() {
   } = useContextConsumer();
 
   // projects api
-  const { data: projects, isLoading } = useGetAllProjects(token);
+  const { data: projects } = useGetAllProjects(token);
 
   return (
     <>
@@ -41,14 +40,6 @@ export default function Home() {
           <div className="absolute inset-0 bg-estateBlack opacity-40 z-20 pointer-events-none"></div>
           {!showProjects && !showDetails && (
             <div className="absolute left-3 md:left-auto top-2 md:top-0 md:right-2 h-full md:w-[400px] md:p-4 md:overflow-y-auto z-30 space-y-4 scrollbar-custom">
-              {/* <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setshowProjects(false)}
-                className="text-primary font-semibold mb-2"
-              >
-                <Undo2 className="inline" />
-              </Button> */}
               <Projects
                 projects={projects?.data || []}
                 onSeeMoreDetails={handleProjectDetails}
