@@ -23,12 +23,8 @@ import { SweetAlert } from "@/components/alerts/SweetAlert";
 import ApplicationDetails from "@/components/ui/Projects/ProjectDetail/ApplicationDetails";
 
 export default function PendingProjects() {
-  const {
-    token,
-    handleApplicationDetails,
-    applicationDetails,
-    showApplicationDetails,
-  } = useContextConsumer();
+  const { token, handleApplicationDetails, showApplicationDetails } =
+    useContextConsumer();
   const { data: applications, isLoading } = useGetAllApplications(
     token,
     "pending"
